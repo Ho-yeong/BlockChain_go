@@ -34,7 +34,7 @@ func (pow *proofOfWork) prepareData(nonce int) []byte {
 	data := bytes.Join(
 		[][]byte{
 			pow.block.PrevBlockHash,
-			pow.block.Data,
+			pow.block.HashTransactions(),
 			IntToHex(pow.block.Timstamp),
 			IntToHex(int64(targetBits)),
 			IntToHex(int64(nonce)),
@@ -49,7 +49,7 @@ func (pow *proofOfWork) Run() (int, []byte) {
 	var hash [32]byte
 	nonce := 0
 
-	fmt.Printf("Mining the block containing / %s/ \n", pow.block.Data)
+	fmt.Printf("Mining a new block")
 
 	for nonce < maxNonce {
 		data := pow.prepareData(nonce)

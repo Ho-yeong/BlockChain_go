@@ -26,18 +26,26 @@ func (cli *CLI) ValidateArgs() {
 func (cli *CLI) Run() {
 	cli.ValidateArgs()
 
-	addBlockCmd := flag.NewFlagSet("addBlock", flag.ExitOnError)
+	// nodeID := os.Getenv("NODE_ID")
+	nodeID := "nodeID"
+	if nodeID == "" {
+		fmt.Printf("NODE ID env. var is not set!")
+		os.Exit(1)
+	}
+
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-	addBlockData := addBlockCmd.String("data", "", "Block data")
+	createBlockchainCmd := flag.NewFlagSet("createBlockchain", flag.ExitOnError)
+
+	createBlockchainAddress := createBlockchainCmd.String("address", "", "The address to send genesis block reward to")
 
 	switch os.Args[1] {
-	case "addBlock":
-		err := addBlockCmd.Parse(os.Args[2:])
+	case "printChain":
+		err := printChainCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
-	case "printChain":
-		err := printChainCmd.Parse(os.Args[2:])
+	case "createBlockchain":
+		err := createBlockchainCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -46,20 +54,15 @@ func (cli *CLI) Run() {
 		os.Exit(1)
 	}
 
-	if addBlockCmd.Parsed() {
-		if *addBlockData == "" {
-			addBlockCmd.Usage()
-			os.Exit(1)
-		}
-		cli.addBlock(*addBlockData)
-	}
-
 	if printChainCmd.Parsed() {
 		cli.printChain()
 	}
-}
 
-func (cli *CLI) addBlock(data string) {
-	cli.bc.AddBlock(data)
-	fmt.Println("Success !")
+	if createBlockchainCmd.Parsed() {
+		if createBlockchainAddress == nil {
+			createBlockchainCmd.Usage()
+			os.Exit(1)
+		}
+		cli.createBlockchain(*createBlockchainAddress, nodeID)
+	}
 }
