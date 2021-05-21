@@ -15,11 +15,11 @@ type Blockchain struct {
 	db  *bolt.DB
 }
 
-func NewGenesisBlock() *Block {
-	return NewBlock("Genesis Block", []byte{})
+func NewGenesisBlock(coinbase *Transaction) *Block {
+	return NewBlock([]*Transaction{coinbase}, []byte{})
 }
 
-func NewBlockChain() *Blockchain {
+func CreateBlockchain(address string) *Blockchain {
 	var tip []byte
 	db, err := bolt.Open(dbFile, 0600, nil)
 	if err != nil {
@@ -29,7 +29,8 @@ func NewBlockChain() *Blockchain {
 	err = db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
 		if b == nil {
-			genesis := NewGenesisBlock()
+			cbtx := NewCoinbaseTX(address, genesisCoinbaseData)
+			genesis := NewGenesisBlock(cbtx)
 			b, err := tx.CreateBucket([]byte(blocksBucket))
 			if err != nil {
 				log.Panic(err)
@@ -48,7 +49,7 @@ func NewBlockChain() *Blockchain {
 	return &bc
 }
 
-func (bc *Blockchain) AddBlock(data string) {
+func (bc *Blockchain) AddBlock(transactions []*Transaction) {
 	var lastHash []byte
 
 	err := bc.db.View(func(tx *bolt.Tx) error {
@@ -60,7 +61,7 @@ func (bc *Blockchain) AddBlock(data string) {
 		log.Panic(err)
 	}
 
-	newBlock := NewBlock(data, lastHash)
+	newBlock := NewBlock(transactions, lastHash)
 
 	err = bc.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))

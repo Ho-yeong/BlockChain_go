@@ -26,13 +26,14 @@ func (cli *CLI) ValidateArgs() {
 func (cli *CLI) Run() {
 	cli.ValidateArgs()
 
-	addBlockCmd := flag.NewFlagSet("addBlock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-	addBlockData := addBlockCmd.String("data", "", "Block data")
+	createBlockhchainCmd := flag.NewFlagSet("createBlockchain", flag.ExitOnError)
+	createBlockchainData := createBlockhchainCmd.String("address", "", "address data")
 
 	switch os.Args[1] {
-	case "addBlock":
-		err := addBlockCmd.Parse(os.Args[2:])
+
+	case "createBlockchain":
+		err := createBlockhchainCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -46,12 +47,12 @@ func (cli *CLI) Run() {
 		os.Exit(1)
 	}
 
-	if addBlockCmd.Parsed() {
-		if *addBlockData == "" {
-			addBlockCmd.Usage()
+	if createBlockhchainCmd.Parsed() {
+		if *createBlockchainData == "" {
+			createBlockhchainCmd.Usage()
 			os.Exit(1)
 		}
-		cli.addBlock(*addBlockData)
+		cli.createBlockchain(*createBlockchainData)
 	}
 
 	if printChainCmd.Parsed() {
@@ -59,7 +60,7 @@ func (cli *CLI) Run() {
 	}
 }
 
-func (cli *CLI) addBlock(data string) {
-	cli.bc.AddBlock(data)
-	fmt.Println("Success !")
+func (cli *CLI) createBlockchain(address string) {
+	CreateBlockchain(address)
+	fmt.Println("Done !")
 }
