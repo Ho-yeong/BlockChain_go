@@ -6,7 +6,11 @@ import (
 )
 
 func (cli *CLI) printChain() {
-	bci := cli.bc.Iterator()
+
+	bc := NewBlockchain("")
+	defer bc.db.Close()
+
+	bci := bc.Iterator()
 
 	for {
 		block := bci.Next()
