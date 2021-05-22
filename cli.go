@@ -30,9 +30,13 @@ func (cli *CLI) Run() {
 	printChainCmd := flag.NewFlagSet("printChain", flag.ExitOnError)
 	createBlockhchainCmd := flag.NewFlagSet("createBlockchain", flag.ExitOnError)
 	getBalanceCmd := flag.NewFlagSet("getBalance", flag.ExitOnError)
+	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
 
 	getBalanceData := getBalanceCmd.String("address", "", "The address to get balance for")
 	createBlockchainData := createBlockhchainCmd.String("address", "", "The address to send genesis block reward to")
+	sendFrom := sendCmd.String("from", "", "Source wallet address")
+	sendTo := sendCmd.String("to", "", "Destination wallet address")
+	sendAmount := sendCmd.Int("amount", 0, "Amount to Send")
 
 	switch os.Args[1] {
 	case "getBalance":
@@ -47,6 +51,11 @@ func (cli *CLI) Run() {
 		}
 	case "printChain":
 		err := printChainCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "send":
+		err := sendCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -73,5 +82,13 @@ func (cli *CLI) Run() {
 			os.Exit(1)
 		}
 		cli.getBalance(*getBalanceData)
+	}
+
+	if sendCmd.Parsed() {
+		if *sendFrom == "" || *sendTo == "" || *sendAmount == 0 {
+			sendCmd.Usage()
+			os.Exit(1)
+		}
+		cli.Send(*sendFrom, *sendTo, *sendAmount)
 	}
 }
