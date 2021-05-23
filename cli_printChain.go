@@ -20,6 +20,9 @@ func (cli *CLI) printChain() {
 
 		pow := NewProofOfWork(block)
 		fmt.Printf("Pow: %s\n", strconv.FormatBool(pow.Validate()))
+		for _, tx := range block.Transactions {
+			fmt.Println(tx)
+		}
 		fmt.Println()
 
 		if len(block.PrevBlockHash) == 0 {

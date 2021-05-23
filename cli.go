@@ -31,6 +31,8 @@ func (cli *CLI) Run() {
 	createBlockhchainCmd := flag.NewFlagSet("createBlockchain", flag.ExitOnError)
 	getBalanceCmd := flag.NewFlagSet("getBalance", flag.ExitOnError)
 	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
+	createWalletCmd := flag.NewFlagSet("createWallet", flag.ExitOnError)
+	listAddressesCmd := flag.NewFlagSet("listAddresses", flag.ExitOnError)
 
 	getBalanceData := getBalanceCmd.String("address", "", "The address to get balance for")
 	createBlockchainData := createBlockhchainCmd.String("address", "", "The address to send genesis block reward to")
@@ -56,6 +58,16 @@ func (cli *CLI) Run() {
 		}
 	case "send":
 		err := sendCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "createWallet":
+		err := createWalletCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "listAddresses":
+		err := listAddressesCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -90,5 +102,13 @@ func (cli *CLI) Run() {
 			os.Exit(1)
 		}
 		cli.Send(*sendFrom, *sendTo, *sendAmount)
+	}
+
+	if createWalletCmd.Parsed() {
+		cli.createWallet()
+	}
+
+	if listAddressesCmd.Parsed() {
+		cli.listAddresses()
 	}
 }

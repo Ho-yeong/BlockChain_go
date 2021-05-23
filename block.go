@@ -22,6 +22,7 @@ func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
 		Transactions:  transactions,
 		PrevBlockHash: prevBlockHash,
 		Hash:          []byte{},
+		Nonce:         0,
 	}
 
 	pow := NewProofOfWork(block)
