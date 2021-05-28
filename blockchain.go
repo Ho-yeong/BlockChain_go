@@ -12,7 +12,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const dbFile = "blockchain.db"
+const dbFile = "blockchain_%s.db"
 const blocksBucket = "blocks"
 const genesisCoinbaseData = "The Times 17/05/2021 My Home in South Korea"
 
@@ -33,7 +33,8 @@ func dbExists() bool {
 }
 
 // NewBlockchain Creates a new Blockchain with genesis block
-func NewBlockchain() *Blockchain {
+func NewBlockchain(nodeID string) *Blockchain {
+	dbFile := fmt.Sprintf(dbFile, nodeID)
 	if dbExists() == false {
 		fmt.Println("No existing blockchain found. Create one First")
 		os.Exit(1)

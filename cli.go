@@ -27,6 +27,12 @@ func (cli *CLI) ValidateArgs() {
 func (cli *CLI) Run() {
 	cli.ValidateArgs()
 
+	nodeID := os.Getenv("NODE_ID")
+	if nodeID == "" {
+		fmt.Printf("NODE_ID env. var is not set!")
+		os.Exit(1)
+	}
+
 	printChainCmd := flag.NewFlagSet("printChain", flag.ExitOnError)
 	createBlockhchainCmd := flag.NewFlagSet("createBlockchain", flag.ExitOnError)
 	getBalanceCmd := flag.NewFlagSet("getBalance", flag.ExitOnError)
@@ -93,7 +99,7 @@ func (cli *CLI) Run() {
 			getBalanceCmd.Usage()
 			os.Exit(1)
 		}
-		cli.getBalance(*getBalanceData)
+		cli.getBalance(*getBalanceData, nodeID)
 	}
 
 	if sendCmd.Parsed() {
