@@ -25,7 +25,7 @@ func NewGenesisBlock(coinbase *Transaction) *Block {
 	return NewBlock([]*Transaction{coinbase}, []byte{})
 }
 
-func dbExists() bool {
+func dbExists(dbFile string) bool {
 	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
 		return false
 	}
@@ -35,7 +35,7 @@ func dbExists() bool {
 // NewBlockchain Creates a new Blockchain with genesis block
 func NewBlockchain(nodeID string) *Blockchain {
 	dbFile := fmt.Sprintf(dbFile, nodeID)
-	if dbExists() == false {
+	if dbExists(dbFile) == false {
 		fmt.Println("No existing blockchain found. Create one First")
 		os.Exit(1)
 	}
@@ -63,8 +63,9 @@ func NewBlockchain(nodeID string) *Blockchain {
 }
 
 // CreateBlockchain creates a new blockchain DB
-func CreateBlockchain(address string) *Blockchain {
-	if dbExists() {
+func CreateBlockchain(address, nodeID string) *Blockchain {
+	dbFile := fmt.Sprintf(dbFile, nodeID)
+	if dbExists(dbFile) {
 		fmt.Println("Blockchain already exists")
 		os.Exit(1)
 	}

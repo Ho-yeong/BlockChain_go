@@ -71,7 +71,7 @@ func (ws *Wallets) LoadFromFile(nodeID string) error {
 	return nil
 }
 
-func (ws Wallets) SaveToFile() {
+func (ws Wallets) SaveToFile(nodeID string) {
 	var content bytes.Buffer
 
 	gob.Register(elliptic.P256())
@@ -82,6 +82,7 @@ func (ws Wallets) SaveToFile() {
 		log.Panic(err)
 	}
 
+	walletFile := fmt.Sprintf(walletFile, nodeID)
 	err = ioutil.WriteFile(walletFile, content.Bytes(), 0644)
 	if err != nil {
 		log.Panic(err)
