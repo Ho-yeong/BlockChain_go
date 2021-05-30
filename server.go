@@ -214,7 +214,7 @@ func handleConnection(conn net.Conn, bc *Blockchain) {
 		log.Panic(err)
 	}
 	command := bytesToCommand(request[:commandLength])
-	fmt.Printf("Receivced &s command\n", command)
+	fmt.Printf("Receivced %s command\n", command)
 
 	switch command {
 	case "addr":
