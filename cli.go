@@ -33,18 +33,20 @@ func (cli *CLI) Run() {
 		os.Exit(1)
 	}
 
-	printChainCmd := flag.NewFlagSet("printChain", flag.ExitOnError)
-	createBlockhchainCmd := flag.NewFlagSet("createBlockchain", flag.ExitOnError)
 	getBalanceCmd := flag.NewFlagSet("getBalance", flag.ExitOnError)
-	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
+	createBlockhchainCmd := flag.NewFlagSet("createBlockchain", flag.ExitOnError)
 	createWalletCmd := flag.NewFlagSet("createWallet", flag.ExitOnError)
 	listAddressesCmd := flag.NewFlagSet("listAddresses", flag.ExitOnError)
+	printChainCmd := flag.NewFlagSet("printChain", flag.ExitOnError)
+	reindexUTXOCmd := flag.NewFlagSet("reindexutxo", flag.ExitOnError)
+	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
 
 	getBalanceData := getBalanceCmd.String("address", "", "The address to get balance for")
 	createBlockchainData := createBlockhchainCmd.String("address", "", "The address to send genesis block reward to")
 	sendFrom := sendCmd.String("from", "", "Source wallet address")
 	sendTo := sendCmd.String("to", "", "Destination wallet address")
 	sendAmount := sendCmd.Int("amount", 0, "Amount to Send")
+	sendMine := sendCmd.Bool("mine", false, "Mine immediately on the same node")
 
 	switch os.Args[1] {
 	case "getBalance":
@@ -77,6 +79,11 @@ func (cli *CLI) Run() {
 		if err != nil {
 			log.Panic(err)
 		}
+	case "reindexutxo":
+		err := reindexUTXOCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
 	default:
 		cli.printUsage()
 		os.Exit(1)
@@ -91,7 +98,7 @@ func (cli *CLI) Run() {
 	}
 
 	if printChainCmd.Parsed() {
-		cli.printChain()
+		cli.printChain(nodeID)
 	}
 
 	if getBalanceCmd.Parsed() {
@@ -107,14 +114,18 @@ func (cli *CLI) Run() {
 			sendCmd.Usage()
 			os.Exit(1)
 		}
-		cli.Send(*sendFrom, *sendTo, *sendAmount)
+		cli.Send(*sendFrom, *sendTo, *sendAmount, nodeID, *sendMine)
 	}
 
 	if createWalletCmd.Parsed() {
-		cli.createWallet()
+		cli.createWallet(nodeID)
 	}
 
 	if listAddressesCmd.Parsed() {
-		cli.listAddresses()
+		cli.listAddresses(nodeID)
+	}
+
+	if reindexUTXOCmd.Parsed() {
+		cli.reindexUTXO(nodeID)
 	}
 }

@@ -13,6 +13,7 @@ type Block struct {
 	PrevBlockHash []byte
 	Hash          []byte
 	Nonce         int
+	Height        int
 }
 
 func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
